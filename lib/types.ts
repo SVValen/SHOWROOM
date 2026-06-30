@@ -1,0 +1,55 @@
+export type ProductoEstado = 'disponible' | 'vendido' | 'reservado'
+export type ProductoOrigen = 'bot' | 'web'
+
+export interface Producto {
+  id: string
+  nombre: string
+  categoria: string | null
+  costo: number
+  precio_venta: number
+  stock: number
+  estado: ProductoEstado
+  foto_url: string | null
+  origen: ProductoOrigen
+  creado_en: string
+  actualizado_en: string
+}
+
+export interface Venta {
+  id: string
+  producto_id: string
+  precio_vendido: number
+  costo_al_momento: number
+  ganancia: number
+  fecha: string
+}
+
+export interface Retiro {
+  id: string
+  monto: number
+  motivo: string | null
+  fecha: string
+}
+
+export interface BotSesion {
+  chat_id: string
+  paso: BotPaso
+  datos_parciales: Partial<DatosParciales>
+  actualizado_en: string
+}
+
+export type BotPaso =
+  | 'esperando_foto'
+  | 'esperando_nombre'
+  | 'esperando_costo'
+  | 'esperando_venta'
+  | 'esperando_categoria'
+  | 'esperando_confirmacion'
+
+export interface DatosParciales {
+  foto_url: string
+  nombre: string
+  costo: number
+  precio_venta: number
+  categoria: string
+}
