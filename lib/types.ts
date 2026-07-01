@@ -5,11 +5,13 @@ export interface Producto {
   id: string
   nombre: string
   categoria: string | null
+  subcategoria: string | null
   costo: number
   precio_venta: number
   stock: number
   estado: ProductoEstado
   foto_url: string | null
+  fotos_urls: string[]
   origen: ProductoOrigen
   creado_en: string
   actualizado_en: string
@@ -39,17 +41,20 @@ export interface BotSesion {
 }
 
 export type BotPaso =
-  | 'esperando_foto'
   | 'esperando_nombre'
+  | 'esperando_categoria'
+  | 'esperando_subcategoria'
   | 'esperando_costo'
   | 'esperando_venta'
-  | 'esperando_categoria'
+  | 'esperando_fotos'
   | 'esperando_confirmacion'
 
 export interface DatosParciales {
-  foto_url: string
   nombre: string
+  categoria: string
+  subcategoria: string
   costo: number
   precio_venta: number
-  categoria: string
+  foto_url: string
+  fotos_urls: string[]
 }
