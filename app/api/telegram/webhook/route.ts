@@ -226,7 +226,7 @@ async function handleCallbackQuery(
         foto_url: fotosUrls[0] ?? null,
         fotos_urls: fotosUrls,
         origen: 'bot',
-        stock: 1,
+        stock: datos.stock ?? 1,
         estado: 'disponible',
       })
       if (error) {
@@ -275,10 +275,18 @@ async function manejarPaso(
     case 'esperando_venta': {
       const precio_venta = parseNumero(texto)
       if (!precio_venta || precio_venta <= 0) { await sendMessage(chatId, 'Ingresá un número válido. Ej: 15000'); return }
-      await actualizarSesion(supabase, chatId, 'esperando_fotos', { ...datos, precio_venta, fotos_urls: [] })
+      await actualizarSesion(supabase, chatId, 'esperando_stock', { ...datos, precio_venta })
+      await sendMessage(chatId, `Venta: <b>$${precio_venta.toLocaleString('es-AR')}</b>\n\n📦 ¿Cuántas unidades hay en stock?`)
+      break
+    }
+
+    case 'esperando_stock': {
+      const stock = parseInt(texto)
+      if (isNaN(stock) || stock < 0) { await sendMessage(chatId, 'Ingresá un número entero. Ej: 1'); return }
+      await actualizarSesion(supabase, chatId, 'esperando_fotos', { ...datos, stock, fotos_urls: [] })
       await sendMessage(
         chatId,
-        `Venta: <b>$${precio_venta.toLocaleString('es-AR')}</b>\n\n📷 Ahora mandá las fotos del producto (una o varias). Cuando termines, tocá el botón.`,
+        `Stock: <b>${stock} unidad${stock !== 1 ? 'es' : ''}</b>\n\n📷 Ahora mandá las fotos del producto (una o varias). Cuando termines, tocá el botón.`,
         KB_LISTO_FOTOS
       )
       break
@@ -376,6 +384,7 @@ function resumenProducto(datos: Partial<DatosParciales>): string {
     `• Categoría: <b>${cat || 'Sin categoría'}</b>\n` +
     `• Costo: <b>$${datos.costo?.toLocaleString('es-AR')}</b>\n` +
     `• Precio de venta: <b>$${datos.precio_venta?.toLocaleString('es-AR')}</b>\n` +
+    `• Stock: <b>${datos.stock ?? 1} unidad${(datos.stock ?? 1) !== 1 ? 'es' : ''}</b>\n` +
     `• Fotos: <b>${fotos}</b>\n\n` +
     `¿Confirmás?`
   )

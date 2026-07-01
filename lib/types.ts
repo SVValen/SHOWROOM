@@ -53,6 +53,7 @@ export type BotPaso =
   | 'esperando_subcategoria'
   | 'esperando_costo'
   | 'esperando_venta'
+  | 'esperando_stock'
   | 'esperando_fotos'
   | 'esperando_confirmacion'
 
@@ -62,6 +63,7 @@ export interface DatosParciales {
   subcategoria: string
   costo: number
   precio_venta: number
+  stock: number
   foto_url: string
   fotos_urls: string[]
 }
