@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
 
 const nav = [
@@ -16,6 +16,12 @@ const nav = [
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+
+  const logout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+  }
 
   return (
     <div className="flex h-full min-h-screen bg-gray-50">
@@ -70,8 +76,27 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-slate-700">
-          <p className="text-xs text-slate-500">Panel de gestión</p>
+        <div className="px-3 py-4 border-t border-slate-700 space-y-0.5">
+          <Link
+            href="/perfil"
+            onClick={() => setOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              pathname === '/perfil'
+                ? 'text-white'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+            }`}
+            style={pathname === '/perfil' ? { background: 'var(--accent)', color: '#1e293b' } : {}}
+          >
+            <span className="text-base">👤</span>
+            Mi perfil
+          </Link>
+          <button
+            onClick={logout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
+          >
+            <span className="text-base">🚪</span>
+            Salir
+          </button>
         </div>
       </aside>
 

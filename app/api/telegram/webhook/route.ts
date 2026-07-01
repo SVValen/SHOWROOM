@@ -35,6 +35,19 @@ export async function POST(request: NextRequest) {
   if (!message) return NextResponse.json({ ok: true })
 
   const chatId = String(message.chat.id)
+
+  // Verificar que el chat_id esté autorizado
+  const { data: usuarioAutorizado } = await supabase
+    .from('usuarios')
+    .select('id')
+    .eq('telegram_id', chatId)
+    .single()
+
+  if (!usuarioAutorizado) {
+    await sendMessage(chatId, '⛔ No tenés acceso a este bot.')
+    return NextResponse.json({ ok: true })
+  }
+
   const texto = message.text?.trim() ?? ''
   const foto = message.photo
 
