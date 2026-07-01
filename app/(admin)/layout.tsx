@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
@@ -11,12 +11,23 @@ const nav = [
   { href: '/retiros',    label: 'Retiros',    icon: '💸' },
   { href: '/metricas',   label: 'Métricas',   icon: '📊' },
   { href: '/categorias', label: 'Categorías', icon: '🏷️' },
+  { href: '/negocio',    label: 'Mi negocio', icon: '🏪' },
 ]
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+
+  const [negocioNombre, setNegocioNombre] = useState('Showroom SP')
+  const [negocioLogo, setNegocioLogo] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/negocio').then(r => r.json()).then(d => {
+      if (d.nombre) setNegocioNombre(d.nombre)
+      if (d.logo_url) setNegocioLogo(d.logo_url)
+    })
+  }, [pathname]) // re-fetch al navegar para reflejar cambios desde /negocio
 
   const logout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -42,13 +53,20 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           lg:relative lg:translate-x-0 lg:flex
         `}
       >
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-700">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-slate-900" style={{ background: 'var(--accent)' }}>
-            SP
+        {/* Logo / nombre negocio */}
+        <Link
+          href="/negocio"
+          onClick={() => setOpen(false)}
+          className="flex items-center gap-3 px-5 py-5 border-b border-slate-700 hover:bg-slate-800 transition-colors"
+        >
+          <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 flex items-center justify-center text-sm font-bold text-slate-900" style={!negocioLogo ? { background: 'var(--accent)' } : {}}>
+            {negocioLogo
+              ? <img src={negocioLogo} alt="Logo" className="w-full h-full object-cover" />
+              : negocioNombre.slice(0, 2).toUpperCase()
+            }
           </div>
-          <span className="text-white font-semibold text-sm tracking-wide">Showroom SP</span>
-        </div>
+          <span className="text-white font-semibold text-sm tracking-wide truncate">{negocioNombre}</span>
+        </Link>
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-0.5">
@@ -113,7 +131,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="font-semibold text-gray-800 text-sm">Showroom SP</span>
+          {negocioLogo
+            ? <img src={negocioLogo} alt="Logo" className="w-6 h-6 rounded object-cover" />
+            : null
+          }
+          <span className="font-semibold text-gray-800 text-sm truncate">{negocioNombre}</span>
         </header>
 
         <main className="flex-1 overflow-auto">
