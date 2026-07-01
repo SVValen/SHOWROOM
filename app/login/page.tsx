@@ -32,23 +32,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900 px-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
           <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold text-slate-900 mx-auto mb-3"
+            className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold text-slate-900 mx-auto mb-4 shadow-lg"
             style={{ background: 'var(--accent)' }}
           >
             SP
           </div>
-          <h1 className="text-xl font-bold text-gray-900">Showroom SP</h1>
-          <p className="text-sm text-gray-500 mt-1">Ingresá para acceder al panel</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Bienvenida</h1>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">Ingresá para acceder al panel</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">
+            <label className="block text-xs font-medium text-gray-500 dark:text-slate-400 mb-1.5">
               ID de Telegram
             </label>
             <input
@@ -63,7 +63,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">
+            <label className="block text-xs font-medium text-gray-500 dark:text-slate-400 mb-1.5">
               Contraseña
             </label>
             <input
@@ -77,13 +77,13 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+            <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/50 px-3 py-2 rounded-lg">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading || !telegramId || !password}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-slate-900 transition-opacity disabled:opacity-50"
+            className="w-full py-2.5 rounded-xl text-sm font-semibold text-slate-900 transition-opacity disabled:opacity-50 mt-2"
             style={{ background: 'var(--accent)' }}
           >
             {loading ? 'Ingresando...' : 'Ingresar'}

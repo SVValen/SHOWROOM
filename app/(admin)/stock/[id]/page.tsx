@@ -15,7 +15,6 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
   const [guardando, setGuardando] = useState(false)
   const [fotoActiva, setFotoActiva] = useState(0)
 
-  // Form state
   const [nombre, setNombre] = useState('')
   const [categoria, setCategoria] = useState('')
   const [subcategoria, setSubcategoria] = useState('')
@@ -70,7 +69,6 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
     if (!precioStr) return
     const precio = parseFloat(precioStr)
     if (isNaN(precio)) return
-
     await fetch('/api/ventas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -87,16 +85,14 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center gap-2 h-48 text-gray-400 text-sm">
-        <div className="w-4 h-4 border-2 border-gray-200 border-t-gray-400 rounded-full animate-spin" />
+      <div className="flex items-center justify-center gap-2 h-48 text-gray-400 dark:text-slate-500 text-sm">
+        <div className="w-4 h-4 border-2 border-gray-200 dark:border-slate-700 border-t-gray-400 dark:border-t-slate-400 rounded-full animate-spin" />
         Cargando...
       </div>
     )
   }
 
-  if (!producto) {
-    return <div className="p-8 text-red-500 text-sm">Producto no encontrado.</div>
-  }
+  if (!producto) return <div className="p-8 text-red-500 text-sm">Producto no encontrado.</div>
 
   const todasLasFotos = [
     ...(producto.foto_url ? [producto.foto_url] : []),
@@ -113,22 +109,21 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-sm">
-        <Link href="/stock" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link href="/stock" className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors">
           ← Stock
         </Link>
-        <span className="text-gray-300">/</span>
-        <span className="text-gray-700 font-medium line-clamp-1">{producto.nombre}</span>
+        <span className="text-gray-300 dark:text-slate-700">/</span>
+        <span className="text-gray-700 dark:text-slate-300 font-medium line-clamp-1">{producto.nombre}</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Columna izquierda: fotos */}
         <div className="space-y-3">
-          {/* Foto principal */}
-          <div className="aspect-square bg-gray-100 rounded-2xl overflow-hidden relative">
+          <div className="aspect-square bg-gray-100 dark:bg-slate-800 rounded-2xl overflow-hidden relative">
             {fotoMostrada ? (
               <img src={fotoMostrada} alt={producto.nombre} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-gray-300 gap-2">
+              <div className="w-full h-full flex flex-col items-center justify-center text-gray-300 dark:text-slate-600 gap-2">
                 <span className="text-6xl">📷</span>
                 <span className="text-sm">Sin foto</span>
               </div>
@@ -138,7 +133,6 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
             </div>
           </div>
 
-          {/* Thumbnails */}
           {todasLasFotos.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-1">
               {todasLasFotos.map((url, i) => (
@@ -155,22 +149,21 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
             </div>
           )}
 
-          {/* Info del origen */}
-          <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-400 space-y-1">
+          <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-3 text-xs text-gray-400 dark:text-slate-500 space-y-1 border border-gray-100 dark:border-slate-700">
             <div className="flex justify-between">
               <span>Origen</span>
-              <span className="capitalize font-medium text-gray-600">{producto.origen}</span>
+              <span className="capitalize font-medium text-gray-600 dark:text-slate-300">{producto.origen}</span>
             </div>
             <div className="flex justify-between">
               <span>Cargado</span>
-              <span className="font-medium text-gray-600">
+              <span className="font-medium text-gray-600 dark:text-slate-300">
                 {new Date(producto.creado_en).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })}
               </span>
             </div>
             {margen !== null && (
               <div className="flex justify-between">
                 <span>Margen</span>
-                <span className={`font-semibold ${margen >= 40 ? 'text-emerald-600' : margen >= 20 ? 'text-amber-600' : 'text-red-500'}`}>
+                <span className={`font-semibold ${margen >= 40 ? 'text-emerald-600 dark:text-emerald-400' : margen >= 20 ? 'text-amber-600 dark:text-amber-400' : 'text-red-500'}`}>
                   {margen}%
                 </span>
               </div>
@@ -181,17 +174,12 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
         {/* Columna derecha: formulario */}
         <div className="space-y-5">
           <div>
-            <h1 className="text-xl font-bold text-gray-900 mb-0.5">{producto.nombre}</h1>
-            <p className="text-sm text-gray-400">ID: {id.slice(0, 8)}...</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-0.5">{producto.nombre}</h1>
+            <p className="text-sm text-gray-400 dark:text-slate-500">ID: {id.slice(0, 8)}...</p>
           </div>
 
           <FormField label="Nombre">
-            <input
-              type="text"
-              value={nombre}
-              onChange={e => setNombre(e.target.value)}
-              className="input"
-            />
+            <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} className="input" />
           </FormField>
 
           <div className="grid grid-cols-2 gap-3">
@@ -205,7 +193,6 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
                 {categorias.map(c => <option key={c.id} value={c.nombre}>{c.nombre}</option>)}
               </select>
             </FormField>
-
             <FormField label="Subcategoría">
               <select
                 value={subcategoria}
@@ -222,25 +209,14 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
           <div className="grid grid-cols-2 gap-3">
             <FormField label="Precio de costo">
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                <input
-                  type="number"
-                  value={costo}
-                  onChange={e => setCosto(e.target.value)}
-                  className="input pl-7"
-                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 text-sm">$</span>
+                <input type="number" value={costo} onChange={e => setCosto(e.target.value)} className="input pl-7" />
               </div>
             </FormField>
-
             <FormField label="Precio de venta">
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                <input
-                  type="number"
-                  value={precioVenta}
-                  onChange={e => setPrecioVenta(e.target.value)}
-                  className="input pl-7"
-                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 text-sm">$</span>
+                <input type="number" value={precioVenta} onChange={e => setPrecioVenta(e.target.value)} className="input pl-7" />
               </div>
             </FormField>
           </div>
@@ -253,19 +229,11 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
                 <option value="vendido">Vendido</option>
               </select>
             </FormField>
-
             <FormField label="Stock">
-              <input
-                type="number"
-                value={stock}
-                onChange={e => setStock(e.target.value)}
-                min="0"
-                className="input"
-              />
+              <input type="number" value={stock} onChange={e => setStock(e.target.value)} min="0" className="input" />
             </FormField>
           </div>
 
-          {/* Botones de acción */}
           <div className="flex flex-col gap-2 pt-2">
             <button
               onClick={guardar}
@@ -275,7 +243,6 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
             >
               {guardando ? 'Guardando...' : 'Guardar cambios'}
             </button>
-
             {producto.estado === 'disponible' && (
               <button
                 onClick={marcarVendido}
@@ -286,12 +253,11 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
             )}
           </div>
 
-          {/* Zona de peligro */}
-          <div className="border-t border-gray-100 pt-4">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Zona de peligro</p>
+          <div className="border-t border-gray-100 dark:border-slate-700 pt-4">
+            <p className="text-xs font-medium text-gray-400 dark:text-slate-500 uppercase tracking-wide mb-3">Zona de peligro</p>
             <button
               onClick={eliminar}
-              className="w-full py-2 rounded-xl text-sm font-medium text-red-500 border border-red-200 hover:bg-red-50 transition-colors"
+              className="w-full py-2 rounded-xl text-sm font-medium text-red-500 border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
             >
               Eliminar producto
             </button>
@@ -305,7 +271,7 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
 function FormField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-500 mb-1.5">{label}</label>
+      <label className="block text-xs font-medium text-gray-500 dark:text-slate-400 mb-1.5">{label}</label>
       {children}
     </div>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
@@ -22,8 +22,25 @@ interface Props {
 
 export default function Sidebar({ children, nombre, logoUrl }: Props) {
   const [open, setOpen] = useState(false)
+  const [dark, setDark] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains('dark'))
+  }, [])
+
+  const toggleDark = () => {
+    const next = !dark
+    setDark(next)
+    if (next) {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+    }
+  }
 
   const logout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -31,11 +48,11 @@ export default function Sidebar({ children, nombre, logoUrl }: Props) {
   }
 
   return (
-    <div className="flex h-full min-h-screen bg-gray-50">
+    <div className="flex h-full min-h-screen bg-gray-50 dark:bg-slate-900">
       {/* Overlay mobile */}
       {open && (
         <div
-          className="fixed inset-0 z-20 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-20 bg-black/50 lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
@@ -43,8 +60,8 @@ export default function Sidebar({ children, nombre, logoUrl }: Props) {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-30 w-60 bg-slate-900 flex flex-col
-          transform transition-transform duration-200 ease-in-out
+          fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 dark:bg-slate-950 flex flex-col
+          transform transition-transform duration-200 ease-in-out border-r border-slate-800
           ${open ? 'translate-x-0' : '-translate-x-full'}
           lg:relative lg:translate-x-0 lg:flex
         `}
@@ -53,10 +70,10 @@ export default function Sidebar({ children, nombre, logoUrl }: Props) {
         <Link
           href="/negocio"
           onClick={() => setOpen(false)}
-          className="flex items-center gap-3 px-5 py-5 border-b border-slate-700 hover:bg-slate-800 transition-colors"
+          className="flex items-center gap-3 px-5 py-5 border-b border-slate-800 hover:bg-slate-800 transition-colors"
         >
           <div
-            className="w-8 h-8 rounded-lg overflow-hidden shrink-0 flex items-center justify-center text-sm font-bold text-slate-900"
+            className="w-9 h-9 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-sm font-bold text-slate-900"
             style={!logoUrl ? { background: 'var(--accent)' } : {}}
           >
             {logoUrl
@@ -68,7 +85,7 @@ export default function Sidebar({ children, nombre, logoUrl }: Props) {
         </Link>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {nav.map(({ href, label, icon }) => {
             const active = pathname === href || pathname.startsWith(href + '/')
             return (
@@ -77,15 +94,15 @@ export default function Sidebar({ children, nombre, logoUrl }: Props) {
                 href={href}
                 onClick={() => setOpen(false)}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                   ${active
-                    ? 'text-white'
+                    ? 'shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
                   }
                 `}
                 style={active ? { background: 'var(--accent)', color: '#1e293b' } : {}}
               >
-                <span className="text-base">{icon}</span>
+                <span className="text-base w-5 text-center">{icon}</span>
                 {label}
               </Link>
             )
@@ -93,25 +110,34 @@ export default function Sidebar({ children, nombre, logoUrl }: Props) {
         </nav>
 
         {/* Footer */}
-        <div className="px-3 py-4 border-t border-slate-700 space-y-0.5">
+        <div className="px-3 py-3 border-t border-slate-800 space-y-0.5">
+          {/* Toggle dark mode */}
+          <button
+            onClick={toggleDark}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+          >
+            <span className="text-base w-5 text-center">{dark ? '☀️' : '🌙'}</span>
+            {dark ? 'Modo claro' : 'Modo noche'}
+          </button>
+
           <Link
             href="/perfil"
             onClick={() => setOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
               pathname === '/perfil'
-                ? 'text-white'
+                ? 'shadow-sm'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
             }`}
             style={pathname === '/perfil' ? { background: 'var(--accent)', color: '#1e293b' } : {}}
           >
-            <span className="text-base">👤</span>
+            <span className="text-base w-5 text-center">👤</span>
             Mi perfil
           </Link>
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
           >
-            <span className="text-base">🚪</span>
+            <span className="text-base w-5 text-center">🚪</span>
             Salir
           </button>
         </div>
@@ -120,18 +146,27 @@ export default function Sidebar({ children, nombre, logoUrl }: Props) {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar mobile */}
-        <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-200 sticky top-0 z-10">
+        <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10">
           <button
             onClick={() => setOpen(true)}
-            className="p-1.5 rounded-md text-gray-500 hover:bg-gray-100"
+            className="p-2 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
             aria-label="Abrir menú"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          {logoUrl && <img src={logoUrl} alt="Logo" className="w-6 h-6 rounded object-cover" />}
-          <span className="font-semibold text-gray-800 text-sm truncate">{nombre}</span>
+          {logoUrl
+            ? <img src={logoUrl} alt="Logo" className="w-7 h-7 rounded-lg object-cover" />
+            : <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-slate-900" style={{ background: 'var(--accent)' }}>{nombre.slice(0,2).toUpperCase()}</div>
+          }
+          <span className="font-semibold text-gray-800 dark:text-white text-sm truncate flex-1">{nombre}</span>
+          <button
+            onClick={toggleDark}
+            className="p-2 rounded-lg text-gray-400 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            {dark ? '☀️' : '🌙'}
+          </button>
         </header>
 
         <main className="flex-1 overflow-auto">
