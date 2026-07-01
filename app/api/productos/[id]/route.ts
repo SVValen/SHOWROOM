@@ -30,6 +30,9 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params
   const supabase = createServiceClient()
 
+  // Eliminar ventas asociadas primero (FK constraint)
+  await supabase.from('ventas').delete().eq('producto_id', id)
+
   const { error } = await supabase.from('productos').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return new NextResponse(null, { status: 204 })
